@@ -3,6 +3,7 @@
         var M = {},
             boxes = [],
             grid = null,
+            ctr = null,
             gridL = 0,
             gridT = 0,
             gridW = 0,
@@ -22,7 +23,8 @@
         var Box = function (view, cbs) {
             var pos = boxes.length,
                 self = this,
-                maxCols = Math.floor(grid.clientWidth / (boxW + boxG));
+                maxCols = Math.floor(grid.clientWidth / (boxW + boxG)),
+                nRows = Math.ceil((boxes.length + 1) / maxCols);
 
             if (!view) {
                 throw 'Box(): No view assigned to the box';
@@ -42,7 +44,12 @@
 
                 view.style.width = boxW + 'px';
                 view.style.height = boxH + 'px';
-                grid.appendChild(view);
+
+                css(ctr, {
+                    width: (maxCols * (boxW + boxG)) + 'px',
+                    height: (nRows * (boxH + boxG)) + 'px'
+                });
+                ctr.appendChild(view);
 
                 Object.defineProperty(this, 'mLeft', {
                     get: function () {
@@ -197,13 +204,32 @@
                 overflow: 'auto'
             });
 
+            ctr = document.createElement('div');
+            css(ctr, {
+                position: 'absolute',
+                left: '0',
+                top: '0',
+                width: '0',
+                height: '0'
+            });
+            grid.appendChild(ctr);
+
             window.addEventListener('resize', function () {
+                var maxCols,
+                    nRows;
+
                 gridW = config.gridW || (innerWidth - 2*gridL);
                 gridH = config.gridH || (innerHeight - 2*gridT);
-
                 css(grid, {
                     width: gridW + 'px',
                     height: gridH + 'px'
+                });
+
+                maxCols = Math.floor(grid.clientWidth / (boxW + boxG)),
+                nRows = Math.ceil(boxes.length / maxCols);
+                css(ctr, {
+                    width: (maxCols * (boxW + boxG)) + 'px',
+                    height: (nRows * (boxH + boxG)) + 'px'
                 });
 
                 for (var i = 0; i < boxes.length; i++) {
