@@ -131,13 +131,20 @@
             drag: function (e) {
                 var box = this.mView,
                     maxCols = Math.floor(grid.clientWidth / (boxW + boxG)),
+                    nRows = Math.ceil(boxes.length / maxCols),
                     coords = [(e.clientX + gridL - this.mDeltaX),
                               (e.clientY + gridT - this.mDeltaY)],
-                    pos = Math.floor(coords[0] / (boxW + boxG) + 0.5) +
-                          Math.floor(coords[1] / (boxH + boxG) + 0.5) *
-                          maxCols,
-                    curPos = this.mPos;
+                    curPos = this.mPos,
+                    pos;
 
+                coords[0] = Math.max(coords[0], 0);
+                coords[0] = Math.min(coords[0], (maxCols - 1) * (boxW + boxG));
+                coords[1] = Math.max(coords[1], 0);
+                coords[1] = Math.min(coords[1], (nRows - 1) * (boxH + boxG));
+
+                pos = Math.floor(coords[0] / (boxW + boxG) + 0.5) +
+                      Math.floor(coords[1] / (boxH + boxG) + 0.5) *
+                      maxCols;
                 pos = Math.max(0, pos);
                 pos = Math.min(boxes.length - 1, pos);
 
