@@ -5,12 +5,11 @@ body {
 
 .rbg-box {
     background-color: white;
-    box-shadow: 0 0 0 2px grey inset;
+    border: 2px solid grey;
 }
 
 .rbg-drag {
     cursor: move;
-    background-color: grey;
     box-shadow: 1px 1px 5px black;
 }
 

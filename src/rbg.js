@@ -73,8 +73,9 @@
                 this.mView = view;
                 this.mDeltaX = 0;
                 this.mDeltaY = 0;
-                this.mLeft = ((pos % maxCols) * (boxW + boxG));
-                this.mTop = (Math.floor(pos / maxCols) * (boxH + boxG));
+                this.mLeft = 0;
+                this.mTop = 0;
+                this.mPos = pos;
 
                 this.mOnMouseMove = function (e) {
                     self.drag(e);
@@ -103,7 +104,7 @@
                 var view = this.mView;
 
                 css(view, {zIndex: '2000', transition: 'none'});
-                view.style.transform = 'scale(1.05)';
+                view.style.transform = 'scale(0.95)';
                 view.addEventListener('mousemove', this.mOnMouseMove);
 
                 this.mDeltaX = e.clientX + gridL - this.mLeft,
@@ -185,7 +186,8 @@
                 top: gridT + 'px',
                 width: gridW + 'px',
                 height: gridH + 'px',
-                webkitUserSelect: 'none'
+                webkitUserSelect: 'none',
+                overflow: 'auto'
             });
 
             window.addEventListener('resize', function () {

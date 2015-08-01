@@ -2,7 +2,7 @@
     RBG.config({
         grid: document.getElementById('rbggrid'),
         gridL: 20,
-        gridT: 10,
+        gridT: 50,
         boxH: 150,
         boxG: 20
     });
