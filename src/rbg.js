@@ -102,13 +102,10 @@
             dragstart: function (e) {
                 var view = this.mView;
 
-                css(view, {
-                    zIndex: '2000',
-                    transition: 'none'
-                });
-
-                view.style.transform = 'scale(0.95)';
+                css(view, {zIndex: '2000', transition: 'none'});
+                view.style.transform = 'scale(1.05)';
                 view.addEventListener('mousemove', this.mOnMouseMove);
+
                 this.mDeltaX = e.clientX + gridL - this.mLeft,
                 this.mDeltaY = e.clientY + gridT - this.mTop;
             },
@@ -120,13 +117,12 @@
                           Math.floor(coords[1] / (boxH + boxG) + 0.5) *
                           maxCols;
 
-                css(view, {
-                    zIndex: '1000',
-                    transition: 'left 0.2s linear, top 0.2s linear'
-                });
+                css(view, {transition: 'left 0.2s linear, top 0.2s linear'});
+                setTimeout(function () { css(view, {zIndex: '1000'}); }, 200);
 
                 pos = Math.max(0, pos);
                 pos = Math.min(boxes.length - 1, pos);
+
                 view.style.transform = '';
                 view.removeEventListener('mousemove', this.mOnMouseMove);
                 this.mPos = pos;
