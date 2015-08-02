@@ -1,25 +1,27 @@
 (function (scope) {
     scope['RBG'] = scope['RBG'] || (function () {
         var M = {},
-            // Array of boxes
+            // Array of boxes.
             boxes = [],
-            // Grid container element
+            // Grid container element.
             grid = null,
-            // Box array container element
+            // Box array container element.
             ctr = null,
-            // Grid left position
+            // Box which acts as an add button.
+            addBox = null,
+            // Grid left position.
             gridL = 0,
-            // Grid top position
+            // Grid top position.
             gridT = 0,
-            // Grid width
+            // Grid width.
             gridW = 0,
-            // Grid height
+            // Grid height.
             gridH = 0,
-            // Box width
+            // Box width.
             boxW = 200,
-            // Box height
+            // Box height.
             boxH = 200,
-            // Gap between boxes
+            // Gap between boxes.
             boxG = 5;
 
         // Apply css style specified in 'cssObj' to the element 'ele'.
@@ -45,7 +47,7 @@
             var remBox = null,
                 pos = boxes.length,
                 self = this,
-                maxCols = Math.floor(grid.clientWidth / (boxW + boxG)),
+                maxCols = Math.floor(gridW / (boxW + boxG)),
                 nRows = Math.ceil((boxes.length + 1) / maxCols);
 
             if (!view) {
@@ -120,41 +122,50 @@
                 this.mLeft = 0;
                 // Top position of the box.
                 this.mTop = 0;
-                // Linear position of the box.
-                this.mPos = pos;
-                // Mouse move callback (call onDrag()).
-                this.mOnMouseMove = function (e) {
-                    self.drag(e);
-                    cbs['onDrag'].apply(self.mView, [e]);
-                };
-                // Mosedown callback (call onDragStart())
-                view.addEventListener('mousedown', function (e) {
-                    self.dragstart(e);
-                    cbs['onDragStart'].apply(self.mView, [e]);
-                });
-                // Mouseup callback (call onDragStop())
-                view.addEventListener('mouseup', function (e) {
-                    self.dragstop(e);
-                    cbs['onDragStop'].apply(self.mView, [e]);
-                });
-                // The element which removes this box on click.
-                remBox = view.querySelector(remSel);
-                // Remove the box when user clicks on the remove
-                // box element.
-                remBox.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    self.remove();
-                });
-                // Stop propagating the mousedown event from the
-                // remove box button.
-                remBox.addEventListener('mousedown', function (e) {
-                    e.stopPropagation();
-                });
-                // Stop propagating the mouseup event from the
-                // remove box button.
-                remBox.addEventListener('mouseup', function (e) {
-                    e.stopPropagation();
-                });
+
+                if (view === addBox) {
+                    // Linear position of the 'add' box.
+                    this.mPos = pos;
+                }
+                else {
+                    // Linear position of the box.
+                    this.mPos = pos - 1;
+                    // Shift the 'add' box by one position to the right.
+                    boxes[0].mPos = boxes[0].mPos + 1;
+                    // Mouse move callback (call onDrag()).
+                    this.mOnMouseMove = function (e) {
+                        self.drag(e);
+                        cbs['onDrag'].apply(self.mView, [e]);
+                    };
+                    // Mosedown callback (call onDragStart())
+                    view.addEventListener('mousedown', function (e) {
+                        self.dragstart(e);
+                        cbs['onDragStart'].apply(self.mView, [e]);
+                    });
+                    // Mouseup callback (call onDragStop())
+                    view.addEventListener('mouseup', function (e) {
+                        self.dragstop(e);
+                        cbs['onDragStop'].apply(self.mView, [e]);
+                    });
+                    // The element which removes this box on click.
+                    remBox = view.querySelector(remSel);
+                    // Remove the box when user clicks on the remove
+                    // box element.
+                    remBox.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        self.remove();
+                    });
+                    // Stop propagating the mousedown event from the
+                    // remove box button.
+                    remBox.addEventListener('mousedown', function (e) {
+                        e.stopPropagation();
+                    });
+                    // Stop propagating the mouseup event from the
+                    // remove box button.
+                    remBox.addEventListener('mouseup', function (e) {
+                        e.stopPropagation();
+                    });
+                }
             }
         };
 
@@ -162,7 +173,7 @@
         Box.prototype = {
             // Reposition the box based on it's linear position.
             reposition: function () {
-                var maxCols = Math.floor(grid.clientWidth / (boxW + boxG)),
+                var maxCols = Math.floor(gridW / (boxW + boxG)),
                     pos = this.mPos;
 
                 this.mLeft = ((pos % maxCols) * (boxW + boxG));
@@ -202,7 +213,7 @@
             // Event handler for drag stop.
             dragstop: function (e) {
                 var view = this.mView,
-                    maxCols = Math.floor(grid.clientWidth / (boxW + boxG)),
+                    maxCols = Math.floor(gridW / (boxW + boxG)),
                     coords = [this.mLeft, this.mTop],
                     pos = Math.floor(coords[0] / (boxW + boxG) + 0.5) +
                           Math.floor(coords[1] / (boxH + boxG) + 0.5) *
@@ -213,7 +224,7 @@
                 setTimeout(function () { css(view, {zIndex: '1000'}); }, 200);
                 // Determine the new position of the dragged box.
                 pos = Math.max(0, pos);
-                pos = Math.min(boxes.length - 1, pos);
+                pos = Math.min(boxes.length - 2, pos);
                 // Remove the 'mousemove' event listener as the box is no
                 // longer being dragged.
                 view.style.transform = '';
@@ -223,7 +234,7 @@
             // Event handler for drag.
             drag: function (e) {
                 var box = this.mView,
-                    maxCols = Math.floor(grid.clientWidth / (boxW + boxG)),
+                    maxCols = Math.floor(gridW / (boxW + boxG)),
                     nRows = Math.ceil(boxes.length / maxCols),
                     coords = [(e.clientX + gridL - this.mDeltaX),
                               (e.clientY + gridT - this.mDeltaY)],
@@ -240,12 +251,12 @@
                       Math.floor(coords[1] / (boxH + boxG) + 0.5) *
                       maxCols;
                 pos = Math.max(0, pos);
-                pos = Math.min(boxes.length - 1, pos);
+                pos = Math.min(boxes.length - 2, pos);
                 // If it's new position is greater than it's current position,
-                // then move all the boxes between it's old and new positions
-                // left by one position.
+                // then move all the boxes (except 'add' box)
+                // between it's old and new positions left by one position.
                 if (pos > curPos) {
-                    for (var i = 0; i < boxes.length; i++) {
+                    for (var i = 1; i < boxes.length; i++) {
                         if (boxes[i] === this) {
                             boxes[i].mPos = pos;
                         }
@@ -256,10 +267,10 @@
                     }
                 }
                 // If it's new position is lesser than it's current position,
-                // then move all the boxes between it's old and new positions
-                // right by one position.
+                // then move all the boxes (except 'add' box)
+                //between it's old and new positions right by one position.
                 else if (pos < curPos) {
-                    for (var i = 0; i < boxes.length; i++) {
+                    for (var i = 1; i < boxes.length; i++) {
                         if (boxes[i] === this) {
                             boxes[i].mPos = pos;
                         }
@@ -280,6 +291,7 @@
             config = config || {};
             grid = config.grid;
             ctr = grid.children[0];
+            addBox = ctr.children[0];
             boxW = config.boxW || boxW;
             boxH = config.boxH || boxH;
             boxG = config.boxG || boxG;
@@ -287,6 +299,7 @@
             gridT = config.gridT || gridT;
             gridW = config.gridW || (innerWidth - 2*gridL);
             gridH = config.gridH || (innerHeight - 2*gridT);
+            config.onAddBoxClick = config.onAddBoxClick || function () {};
 
             if (!grid) {
                 throw('RBG.config(): Grid must specified.');
@@ -328,7 +341,7 @@
                         height: gridH + 'px'
                     });
                     // Determine the new dimensions of the box container.
-                    maxCols = Math.floor(grid.clientWidth / (boxW + boxG)),
+                    maxCols = Math.floor(gridW / (boxW + boxG)),
                     nRows = Math.ceil(boxes.length / maxCols);
                     // Set the new box container dimensions.
                     css(ctr, {
@@ -341,6 +354,13 @@
                         boxes[i].reposition();
                     }
                 });
+                // Add the 'add' box to the grid, and bind the onAddBox()
+                // to its click event.
+                if (addBox) {
+                    ctr.removeChild(addBox);
+                    this.addBox(addBox);
+                    addBox.addEventListener('click', config.onAddBox);
+                }
             }
         };
         // Add a new box to the grid. 'cbs' is the set of callbacks for
