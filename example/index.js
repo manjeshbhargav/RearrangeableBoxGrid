@@ -3,6 +3,7 @@
         grid: document.getElementById('rbggrid'),
         gridL: 20,
         gridT: 50,
+        gridH: 500,
         boxH: 150,
         boxG: 20
     });
