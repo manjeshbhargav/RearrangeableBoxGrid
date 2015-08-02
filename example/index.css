@@ -13,10 +13,18 @@ body {
     box-shadow: 1px 1px 5px black;
 }
 
+.close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+    padding: 1px 3px;
+}
+
 img {
     position: absolute;
     left: 10px;
-    top: 10px;
+    top: 15px;
     width: calc(100% - 20px);
     height: calc(100% - 50px);
 }

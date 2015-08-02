@@ -33,14 +33,17 @@
 
         // Class associated with each box element.
         // view - HTML element for the box.
+        // remSel - selector of element within the box,
+        //          which acts as a 'remove' button.
         // cbs - Callbacks for drag events.
         // cbs = {
         //    onDragStart: function (e) {...},
         //    onDragStop: function (e) {...},
         //    onDrag: function (e) {...}
         // }
-        var Box = function (view, cbs) {
-            var pos = boxes.length,
+        var Box = function (view, remSel, cbs) {
+            var remBox = null,
+                pos = boxes.length,
                 self = this,
                 maxCols = Math.floor(grid.clientWidth / (boxW + boxG)),
                 nRows = Math.ceil((boxes.length + 1) / maxCols);
@@ -134,6 +137,24 @@
                     self.dragstop(e);
                     cbs['onDragStop'].apply(self.mView, [e]);
                 });
+                // The element which removes this box on click.
+                remBox = view.querySelector(remSel);
+                // Remove the box when user clicks on the remove
+                // box element.
+                remBox.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    self.remove();
+                });
+                // Stop propagating the mousedown event from the
+                // remove box button.
+                remBox.addEventListener('mousedown', function (e) {
+                    e.stopPropagation();
+                });
+                // Stop propagating the mouseup event from the
+                // remove box button.
+                remBox.addEventListener('mouseup', function (e) {
+                    e.stopPropagation();
+                });
             }
         };
 
@@ -146,6 +167,21 @@
 
                 this.mLeft = ((pos % maxCols) * (boxW + boxG));
                 this.mTop = (Math.floor(pos / maxCols) * (boxH + boxG));
+            },
+            // Remove the box from the grid.
+            remove: function () {
+                // Remove the box's view from the box container.
+                ctr.removeChild(this.mView);
+                // Remove the box instance from the 'boxes' array.
+                boxes.splice(boxes.indexOf(this), 1);
+                // Move all the boxes to it's right by one position.
+                for (var i = 0; i < boxes.length; i++) {
+                    if (boxes[i].mPos > this.mPos) {
+                        boxes[i].mPos = boxes[i].mPos - 1;
+                    }
+                }
+                // Resize the box container.
+                window.dispatchEvent(new Event('resize'));
             },
             // Event handler for drag start.
             dragstart: function (e) {
@@ -308,9 +344,10 @@
             }
         };
         // Add a new box to the grid. 'cbs' is the set of callbacks for
-        // the drag, dragstart, and dragstop events.
-        M.addBox = function (view, cbs) {
-            boxes.push(new Box(view, cbs));
+        // the drag, dragstart, and dragstop events. 'remSel' is the selector
+        // of the element in the box which acts as a 'remove' button.
+        M.addBox = function (view, remSel, cbs) {
+            boxes.push(new Box(view, remSel, cbs));
         };
 
         return M;
