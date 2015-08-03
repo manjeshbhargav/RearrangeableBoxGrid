@@ -12,9 +12,14 @@ body {
     cursor: pointer;
 }
 
+.rbg-box-tmpl {
+    display: none;
+}
+
 .rbg-box {
     background-color: white;
     border: 2px solid grey;
+    text-align: center;
 }
 
 .rbg-drag {
@@ -31,15 +36,13 @@ body {
 }
 
 img {
-    position: absolute;
-    left: 10px;
-    top: 15px;
-    width: calc(100% - 20px);
-    height: calc(100% - 50px);
+    width: 175px;
+    height: 60%;
+    margin: 15px 10px;
+    box-shadow: 0 0 0 1px #ccc;
 }
 
 span {
-    position: absolute;
-    left: 95px;
-    bottom: 5px;
+    font-family: helvetica;
+    font-size: 11px;
 }
